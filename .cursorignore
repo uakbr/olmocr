@@ -76,3 +76,9 @@ site/
 venv/
 venv_3.11/
 venv311/
+
+__pycache__/
+__pycache__
+__pycache__/*
+
+venv_app/
