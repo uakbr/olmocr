@@ -2,73 +2,250 @@
 <html>
 <head>
     <title>PDF Viewer - Formal_Proof (2).pdf</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #e8f0fe;
+            --dark-color: #333;
+            --light-color: #f5f5f5;
+            --success-color: #34a853;
+            --text-color: #202124;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             margin: 0;
+            padding: 0;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
         }
+        
         .header {
-            background-color: #333;
+            background-color: var(--primary-color);
             color: white;
-            padding: 10px 20px;
-            margin-bottom: 20px;
-            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            position: relative;
         }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .document-info {
+            margin-top: 10px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            background-color: white;
+            color: var(--primary-color);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .copy-all-btn {
+            margin-left: 10px;
+        }
+        
+        .copy-page-btn {
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            margin-top: 10px;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--success-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        .metadata {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
+        }
+        
         .page-container {
             display: flex;
-            margin-bottom: 40px;
+            flex-direction: row;
+            margin-bottom: 50px;
             background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
         }
+        
+        @media (max-width: 768px) {
+            .page-container {
+                flex-direction: column;
+            }
+        }
+        
         .page-image {
             flex: 1;
-            padding-right: 20px;
+            padding: 20px;
             min-width: 0;
+            border-right: 1px solid #eee;
         }
+        
+        @media (max-width: 768px) {
+            .page-image {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+        }
+        
         .page-text {
             flex: 1;
             padding: 20px;
-            overflow-y: auto;
-            background-color: #f9f9f9;
-            border-radius: 5px;
+            background-color: #fafafa;
+            position: relative;
             min-width: 0;
         }
+        
         .page-image img {
             max-width: 100%;
             height: auto;
             border: 1px solid #ddd;
+            border-radius: 4px;
         }
-        h1, h2 {
-            margin-top: 0;
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
         }
-        .metadata {
-            background-color: #e9f7fe;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        
+        h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: var(--primary-color);
         }
+        
         pre {
             white-space: pre-wrap;
             word-wrap: break-word;
-            font-family: monospace;
+            font-family: 'Consolas', 'Monaco', monospace;
             font-size: 14px;
-            line-height: 1.4;
+            line-height: 1.5;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #eee;
+            margin: 0;
+        }
+        
+        .page-navigation {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .page-navigation button {
+            margin: 0 5px;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 999;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>PDF Viewer</h1>
-        <p>Document: Formal_Proof (2).pdf</p>
-    </div>
-    
-    <div class="metadata">
-        <h2>Metadata</h2>
-        <pre>{
+    <div class="container">
+        <div class="header">
+            <div class="navbar">
+                <h1>PDF Viewer</h1>
+                <button id="copyAllText" class="btn copy-all-btn">
+                    <i class="fas fa-copy"></i> Copy All Text
+                </button>
+            </div>
+            <div class="document-info">Document: Formal_Proof (2).pdf</div>
+        </div>
+        
+        <div class="metadata">
+            <h2>Metadata</h2>
+            <pre>{
   "/CreationDate": "D:20250224171446Z",
   "/Creator": "TeX",
   "/ModDate": "D:20250224171446Z",
@@ -76,16 +253,23 @@
   "/Producer": "pdfTeX-1.40.26",
   "/Trapped": "/False"
 }</pre>
-    </div>
-    
-    
+        </div>
+        
+        
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 1 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0000.png" alt="Page 1">
+        <div class="page-header">
+            <h2>Page 1 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0000.png" alt="Page 1">
     </div>
     <div class="page-text">
-        <h2>Page 1 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 1 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Deep Network Normalization Through Gradient Flow Dynamics,
 Implicit Regularization, and Riemannian Geometry
 Umair Akbar
@@ -134,11 +318,18 @@ success to reducinginternal covariate shift— stabilizing the distribution of l
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 2 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0001.png" alt="Page 2">
+        <div class="page-header">
+            <h2>Page 2 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0001.png" alt="Page 2">
     </div>
     <div class="page-text">
-        <h2>Page 2 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 2 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>([4]). However, subsequent investigations cast doubt on this explanation. Santurkaret al. demonstrated
 that BN’s primary impact is tosmooth the optimization landscape, making the loss function more well-
 behaved (Lipschitz continuous in gradients) and gradients more predictable ([4]). This smoothness is
@@ -189,11 +380,18 @@ improves) convergence to critical points of the loss?
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 3 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0002.png" alt="Page 3">
+        <div class="page-header">
+            <h2>Page 3 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0002.png" alt="Page 3">
     </div>
     <div class="page-text">
-        <h2>Page 3 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 3 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>• Generalization: What are theimplicit regularization effects of normalization, if any? Does
 normalization inherently bias the training process toward solutions with particular properties (e.g.
 smaller weight norms, larger margins, or wider basins of attraction), and can this be linked to
@@ -246,11 +444,18 @@ reaching a critical point, compared to an unnormalized counterpart, due to the i
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 4 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0003.png" alt="Page 4">
+        <div class="page-header">
+            <h2>Page 4 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0003.png" alt="Page 4">
     </div>
     <div class="page-text">
-        <h2>Page 4 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 4 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>conditioning. We illustrate this by comparing convergence rates in a simple analytically tractable
 setting (e.g., a linear model with and without normalization) and show consistency with our general
 theory. Furthermore, we explore theimplicit regularization induced by normalization. We
@@ -305,11 +510,18 @@ we describe our synthetic experiments, their setup, and results that corroborate
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 5 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0004.png" alt="Page 5">
+        <div class="page-header">
+            <h2>Page 5 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0004.png" alt="Page 5">
     </div>
     <div class="page-text">
-        <h2>Page 5 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 5 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>for designing neural network architectures and optimization strategies, acknowledges limitations of our
 analysis (e.g., assumptions made), and outlines open questions and possible extensions of this work.
 Section 10 (Conclusion)summarizes the key takeaways and contributions of the paper, reflecting
@@ -359,11 +571,18 @@ scenarios where BN is less effective, such as recurrent neural networks (RNNs) o
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 6 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0005.png" alt="Page 6">
+        <div class="page-header">
+            <h2>Page 6 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0005.png" alt="Page 6">
     </div>
     <div class="page-text">
-        <h2>Page 6 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 6 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>sizes. LN normalizes all activations within a layerfor each sample, rather than across the batch.
 Unlike BN, which computes mean and variance across the batch (for each activation channel), LN
 computes statistics across the neurons in the layer for each single training case. LN does not depend
@@ -419,11 +638,18 @@ Arpit et al. analyzed the cascade of normalizations needed to truly eliminate co
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 7 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0006.png" alt="Page 7">
+        <div class="page-header">
+            <h2>Page 7 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0006.png" alt="Page 7">
     </div>
     <div class="page-text">
-        <h2>Page 7 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 7 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>doing so implicitly considered how scaling transformations cancel out through layers.
 2.3 Understanding the Optimization Benefits of Normalization
 Several research efforts have aimed to rigorously understand why normalization (particularly BN) improves
@@ -476,11 +702,18 @@ theoretical works studying BN in limiting regimes. For example, Yanget al. (2019
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 8 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0007.png" alt="Page 8">
+        <div class="page-header">
+            <h2>Page 8 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0007.png" alt="Page 8">
     </div>
     <div class="page-text">
-        <h2>Page 8 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 8 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>mean field theoryfor BN in deep linear networks, analyzing how signals propagate and showing that
 in very deep networks BN can cause gradients to explode unless combined with skip connections or
 certain nonlinearities ([8]). This insight actually pointed out a potential downside of BN: although
@@ -531,11 +764,18 @@ algebra to avoid any “magic”. This caters to readers who want to see every s
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 9 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0008.png" alt="Page 9">
+        <div class="page-header">
+            <h2>Page 9 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0008.png" alt="Page 9">
     </div>
     <div class="page-text">
-        <h2>Page 9 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 9 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>• Gradient Flow vs. SGD:Most theoretical analyses either consider full-batch gradient descent or
 mean-field limits. The actual training is SGD with noise. We straddle this by first understanding
 deterministic gradient flow, then qualitatively arguing about the effect of stochastic mini-batches.
@@ -590,11 +830,18 @@ training). We will comment on stochastic mini-batch training along the way, but 
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 10 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0009.png" alt="Page 10">
+        <div class="page-header">
+            <h2>Page 10 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0009.png" alt="Page 10">
     </div>
     <div class="page-text">
-        <h2>Page 10 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 10 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Parameter Indexing:When needed, we will index components of weight matrices or vectors. For
 instance, W(l)
 ij is the weight connecting thej-th unit of layer(l−1) to thei-th unit of layerl. The bias
@@ -694,11 +941,18 @@ i is increased byd, zi shifts byd for all examples, and BN
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 11 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0010.png" alt="Page 11">
+        <div class="page-header">
+            <h2>Page 11 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0010.png" alt="Page 11">
     </div>
     <div class="page-text">
-        <h2>Page 11 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 11 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>will subtract that shift out. Thus, BN makes the networkinvariant to the biasin that layer as
 well. For this reason, many implementations omit biasb(l) when using BN, as it is redundant (the
 βi parameter in BN can serve a similar role after normalization). We will incorporate this invariance
@@ -771,11 +1025,18 @@ w = g
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 12 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0011.png" alt="Page 12">
+        <div class="page-header">
+            <h2>Page 12 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0011.png" alt="Page 12">
     </div>
     <div class="page-text">
-        <h2>Page 12 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 12 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Here v is a vector of the same dimension asw, andg is a scalar. During forward propagation,w
 is used as usual: e.g.,z= w ·x + b. But noww will always beg times a unit vector (sincev
 ∥v∥ is
@@ -838,11 +1099,18 @@ to account for these collective dependencies:
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 13 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0012.png" alt="Page 13">
+        <div class="page-header">
+            <h2>Page 13 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0012.png" alt="Page 13">
     </div>
     <div class="page-text">
-        <h2>Page 13 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 13 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>• The derivative of the loss with respect tozi(xn) (the pre-activation of uniti for samplen) receives
 contributions from the direct path through that sample’sˆzi(xn) and from the indirect path through
 µi and σi (which affectˆzi of all samples in the batch).
@@ -944,11 +1212,18 @@ and ∂wk/∂g = 1
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 14 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0013.png" alt="Page 14">
+        <div class="page-header">
+            <h2>Page 14 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0013.png" alt="Page 14">
     </div>
     <div class="page-text">
-        <h2>Page 14 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 14 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>v →αv,g →g/α, then∂L
 ∂v and ∂L
 ∂g adjust accordingly but the combination should reflect that the direction
@@ -1003,11 +1278,18 @@ demonstrate that normalization techniques introduce specificinvariancesin the lo
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 15 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0014.png" alt="Page 15">
+        <div class="page-header">
+            <h2>Page 15 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0014.png" alt="Page 15">
     </div>
     <div class="page-text">
-        <h2>Page 15 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 15 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>in parameter space along which one can move without changing the loss. These invariances imply that
 the loss function isflat (constant) in those directions, which can be interpreted as the presence of a
 Riemannian manifoldof equivalent solutions. We derive the invariances for BatchNorm, LayerNorm, and
@@ -1094,11 +1376,18 @@ ai = γiˆzi + βi
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 16 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0015.png" alt="Page 16">
+        <div class="page-header">
+            <h2>Page 16 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0015.png" alt="Page 16">
     </div>
     <div class="page-text">
-        <h2>Page 16 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 16 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>under θ, and
 a′
 i = γ′
@@ -1166,11 +1455,18 @@ l, scaling the weights and bias of that layer by any positive factorc leaves the
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 17 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0016.png" alt="Page 17">
+        <div class="page-header">
+            <h2>Page 17 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0016.png" alt="Page 17">
     </div>
     <div class="page-text">
-        <h2>Page 17 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 17 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>(hence the loss) unchanged. Specifically, ifθ are parameters andθ′are the same exceptW′(l) = cW(l) and
 b′(l) = cb(l), thenf(x; θ′) = f(x; θ) for all x, thusL(θ′) = L(θ).
 Proof: The proof follows the derivation above up toˆz′
@@ -1242,11 +1538,18 @@ from −w (here we do becauseα> 0 only, not including negative, so actuallyw an
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 18 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0017.png" alt="Page 18">
+        <div class="page-header">
+            <h2>Page 18 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0017.png" alt="Page 18">
     </div>
     <div class="page-text">
-        <h2>Page 18 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 18 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>in BN context since negative scaling flips sign of outputs as BN is not invariant to sign, see [7†L37-L40].
 So the symmetry is only positive scaling, which is isomorphic to half-lines, not full projective sphere
 with antipodal points identified. So topologically, the space of rays with orientation is acone where
@@ -1303,11 +1606,18 @@ gradient and subtracting its radial component, which is effectively the method i
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 19 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0018.png" alt="Page 19">
+        <div class="page-header">
+            <h2>Page 19 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0018.png" alt="Page 19">
     </div>
     <div class="page-text">
-        <h2>Page 19 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 19 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>We can show that the natural gradient on this manifold corresponds to removing the radial component
 from the Euclidean gradient (which we already saw is essentially done by BN’s effect itself).
 Thus, the shape of the loss surface in original space has a flat direction (radial). If we restrict to unit
@@ -1368,11 +1678,18 @@ i
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 20 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0019.png" alt="Page 20">
+        <div class="page-header">
+            <h2>Page 20 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0019.png" alt="Page 20">
     </div>
     <div class="page-text">
-        <h2>Page 20 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 20 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Under scaling,µ′(xn) = cµ(xn) and σ′(xn) = cσ(xn) (since allzi are scaled byc). Then the normalized
 vector:
 ˆz′
@@ -1431,11 +1748,18 @@ Therefore:
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 21 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0020.png" alt="Page 21">
+        <div class="page-header">
+            <h2>Page 21 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0020.png" alt="Page 21">
     </div>
     <div class="page-text">
-        <h2>Page 21 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 21 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>• LN invariances: per layer: scale invariance (common scale for all weights in layer), and uniform shift
 invariance (common bias offset to all neurons in layer).
 • WN invariance: per weight vector: scaling(v,g) no effect.
@@ -1494,11 +1818,18 @@ achieve the elimination of the invariance.
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 22 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0021.png" alt="Page 22">
+        <div class="page-header">
+            <h2>Page 22 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0021.png" alt="Page 22">
     </div>
     <div class="page-text">
-        <h2>Page 22 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 22 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>WN’s authors didn’t mention enforcing∥v∥= 1 at each step, but becausew only depends onv via its
 direction, ∥v∥could drift. They probably rely on maybe some gradient components (like weight decay on
 v or such) or it might not matter. But an optimizer might waste steps changing∥v∥if not careful.
@@ -1556,11 +1887,18 @@ We will focus on scale invariances primarily.
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 23 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0022.png" alt="Page 23">
+        <div class="page-header">
+            <h2>Page 23 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0022.png" alt="Page 23">
     </div>
     <div class="page-text">
-        <h2>Page 23 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 23 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Normalization Parameters involved in symmetrySymmetry transformationDegrees of freedom (per occurrence)
 Batch Norm (per activation)W(l)
 i,·,b(l)
@@ -1613,11 +1951,18 @@ dynamic implications on gradient descent.
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 24 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0023.png" alt="Page 24">
+        <div class="page-header">
+            <h2>Page 24 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0023.png" alt="Page 24">
     </div>
     <div class="page-text">
-        <h2>Page 24 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 24 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>5 Impact on Gradient Flow Dynamics
 Normalization not only alters the static geometry of the loss landscape (as we saw with the introduction
 of invariant flat directions and modified metrics), but it also fundamentally influences thedynamics of
@@ -1664,11 +2009,18 @@ gradient flow.
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 25 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0024.png" alt="Page 25">
+        <div class="page-header">
+            <h2>Page 25 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0024.png" alt="Page 25">
     </div>
     <div class="page-text">
-        <h2>Page 25 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 25 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Lemma 5.1: Consider a single neuron (or a single layer’s single output) with weight vectorw feeding
 into a batch normalization layer. Assume full-batch gradient descent (or gradient flow) on a lossL. Then
 d
@@ -1727,11 +2079,18 @@ possibly driving them to a minimal value (maybe zero theoretically, but practica
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 26 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0025.png" alt="Page 26">
+        <div class="page-header">
+            <h2>Page 26 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0025.png" alt="Page 26">
     </div>
     <div class="page-text">
-        <h2>Page 26 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 26 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>loss considerations). Indeed, practitioners note that with BN, you often rely on weight decay to keep
 weights from growing too much, which otherwise can cause instability at test if running mean/var not
 exact or cause bigger parameter variance.
@@ -1792,11 +2151,18 @@ different weight directions. BN eliminates large second derivative w.rt a weight
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 27 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0026.png" alt="Page 27">
+        <div class="page-header">
+            <h2>Page 27 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0026.png" alt="Page 27">
     </div>
     <div class="page-text">
-        <h2>Page 27 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 27 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>insensitive to scale. In fact, earlier we reasoned Hessian has a zero eigenvalue in scale direction, which is a
 dramatic smoothing (flatness). It might introduce some coupling though (e.g., if two weight’s scale both
 matter only combined, maybe negligible). So effectively, BN can reduce the extreme eigenvalues.
@@ -1849,11 +2215,18 @@ In convex quadratic problems, the convergence rate is determined by the conditio
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 28 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0027.png" alt="Page 28">
+        <div class="page-header">
+            <h2>Page 28 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0027.png" alt="Page 28">
     </div>
     <div class="page-text">
-        <h2>Page 28 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 28 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>(where µ is strong convexity constant). BN might kill one eigen (so strong convexity might reduce?
 Actually in one direction it’s zero, not strongly convex along invariance, but in quotient space consider
 others). But let’s consider near optimum: We have some local minima valley (flat along scale). So ignoring
@@ -1906,11 +2279,18 @@ need for careful weight initialization to some extent).
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 29 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0028.png" alt="Page 29">
+        <div class="page-header">
+            <h2>Page 29 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0028.png" alt="Page 29">
     </div>
     <div class="page-text">
-        <h2>Page 29 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 29 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Thus BN gives the network a "headstart" by always keeping it in a favorable regime of activation scale.
 We can conceptualize Figures (no actual figure here) illustrating:
 • Weight trajectory with BN: weight norm constant, angle gradually aligning to optimum.
@@ -1957,11 +2337,18 @@ makes the Hessian singular. However, those zero directions correspond to the sym
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 30 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0029.png" alt="Page 30">
+        <div class="page-header">
+            <h2>Page 30 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0029.png" alt="Page 30">
     </div>
     <div class="page-text">
-        <h2>Page 30 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 30 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>the solution is not unique along that manifold. If regularization (like weight decay) is added, those
 directions become slightly curved (small eigenvalues instead of zero).
 • The distribution of the remaining non-zero eigenvalues is oftentighter under normalization, improving
@@ -2033,11 +2420,18 @@ changes in angle ofw. The largest curvature likely corresponds to rotatingw with
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 31 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0030.png" alt="Page 31">
+        <div class="page-header">
+            <h2>Page 31 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0030.png" alt="Page 31">
     </div>
     <div class="page-text">
-        <h2>Page 31 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 31 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>w and some data covariance direction (the worst-case direction where loss increases fastest). Without BN,
 what is Hessian? For linear modelz = w·x, a= z, Hessian = Cov(x) basically. With BN, effectively
 Hessian = Cov(ˆx) (the normalized input features). Normalized inputs have identity-ish covariance ifx
@@ -2090,11 +2484,18 @@ constant (related to Hessian norm) is lower with BN ([4]).
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 32 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0031.png" alt="Page 32">
+        <div class="page-header">
+            <h2>Page 32 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0031.png" alt="Page 32">
     </div>
     <div class="page-text">
-        <h2>Page 32 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 32 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Additionally, consider margin theory: A flatter minimum often corresponds to larger margin for
 classification (because weights can wiggle more without changing output labels, indicating more robust
 decision boundary). Balestriero & Baraniuk argued BN increases margin by randomizing decision boundary
@@ -2144,11 +2545,18 @@ believed to correlate with better generalization.
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 33 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0032.png" alt="Page 33">
+        <div class="page-header">
+            <h2>Page 33 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0032.png" alt="Page 33">
     </div>
     <div class="page-text">
-        <h2>Page 33 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 33 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>This sets the stage to consider generalization more explicitly, which we will do in the next section
 by considering the optimization trajectory and implicit regularization in more depth, culminating in
 theoretical insights about generalization bounds and performance.
@@ -2197,11 +2605,18 @@ from trivial invariances).
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 34 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0033.png" alt="Page 34">
+        <div class="page-header">
+            <h2>Page 34 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0033.png" alt="Page 34">
     </div>
     <div class="page-text">
-        <h2>Page 34 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 34 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Convergence speed: We have qualitatively faster convergence. In some cases, one might state
 that BN yields a form oflinear convergencein scenarios where unnormalized gradient descent would be
 sub-linear due to ill-conditioning. For example, consider learning a weight vector in a highly skewed
@@ -2252,11 +2667,18 @@ discuss below.
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 35 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0034.png" alt="Page 35">
+        <div class="page-header">
+            <h2>Page 35 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0034.png" alt="Page 35">
     </div>
     <div class="page-text">
-        <h2>Page 35 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 35 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Margin maximization: In classification, what matters is the sign of the output (for binary) or
 the largest logit (for multi-class). BN normalizes layer outputs but by the final layer (if final layer not
 normalized), the network can still scale outputs arbitrarily. However, consider a network with BN in all
@@ -2310,11 +2732,18 @@ Hardt et al. (2016) gave stability bounds for SGD; adding BN noise might appear 
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 36 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0035.png" alt="Page 36">
+        <div class="page-header">
+            <h2>Page 36 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0035.png" alt="Page 36">
     </div>
     <div class="page-text">
-        <h2>Page 36 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 36 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>per epoch, but if it converges faster, maybe it needs fewer epochs for same fit, maybe net effect is
 fine.
 Empirical generalization: Empirically, BN almost always improves test accuracy if training to same
@@ -2370,11 +2799,18 @@ BN applied to pixel intensities across batch). This is indeed a known BN benefit
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 37 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0036.png" alt="Page 37">
+        <div class="page-header">
+            <h2>Page 37 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0036.png" alt="Page 37">
     </div>
     <div class="page-text">
-        <h2>Page 37 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 37 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Formal bound attempt (sketch):Consider a network with L layers, all with BN, and suppose the
 final output layer is linear. Arora et al. (2018) or others gave a PAC-Bayes bound of roughly:
 GenGap ≤O
@@ -2434,11 +2870,18 @@ these conclusions, before concluding the paper.
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 38 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0037.png" alt="Page 38">
+        <div class="page-header">
+            <h2>Page 38 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0037.png" alt="Page 38">
     </div>
     <div class="page-text">
-        <h2>Page 38 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 38 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>8 Experimental Validation
 To support our theoretical analysis, we design a series of controlled experiments on synthetic data and
 simple neural networks. The goal is to illustrate key phenomena:
@@ -2487,11 +2930,18 @@ is label andf(x) is raw output logit; larger margin implies stronger correct cla
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 39 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0038.png" alt="Page 39">
+        <div class="page-header">
+            <h2>Page 39 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0038.png" alt="Page 39">
     </div>
     <div class="page-text">
-        <h2>Page 39 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 39 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>• We approximate a measure of flatness: add small Gaussian noise to parameters and see if it still
 correctly classifies training data.
 Results:
@@ -2539,11 +2989,18 @@ not possible here. Figure 8.1 (left) would show weight trajectories; 8.1 (right)
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 40 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0039.png" alt="Page 40">
+        <div class="page-header">
+            <h2>Page 40 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0039.png" alt="Page 40">
     </div>
     <div class="page-text">
-        <h2>Page 40 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 40 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>9 Discussion and Future Directions
 Our theoretical analysis provides a deeper understanding of how normalization techniques like batch
 normalization, layer normalization, and weight normalization affect deep neural network training. We now
@@ -2594,11 +3051,18 @@ extremely strong weight decay, just enough to break symmetry.
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 41 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0040.png" alt="Page 41">
+        <div class="page-header">
+            <h2>Page 41 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0040.png" alt="Page 41">
     </div>
     <div class="page-text">
-        <h2>Page 41 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 41 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>9.2 Limitations of Analysis
 While we derived many results from first principles, we did make simplifying assumptions:
 • We often treated the batch normalization as if batch statistics were constant or as if gradients were
@@ -2646,11 +3110,18 @@ There are many fruitful directions for future research:
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 42 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0041.png" alt="Page 42">
+        <div class="page-header">
+            <h2>Page 42 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0041.png" alt="Page 42">
     </div>
     <div class="page-text">
-        <h2>Page 42 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 42 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>• Normalization in different spaces:We analyzed weight and activation normalization. There are
 other ideas like normalizing gradients (e.g., Gradient Norm clipping, or more exotically, Normalized
 Gradient Descent algorithms) that could similarly shape geometry. Understanding connections
@@ -2705,11 +3176,18 @@ for RNNs, time-step correlations break i.i.d assumption, etc.). That could inspi
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 43 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0042.png" alt="Page 43">
+        <div class="page-header">
+            <h2>Page 43 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0042.png" alt="Page 43">
     </div>
     <div class="page-text">
-        <h2>Page 43 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 43 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Batch Renormalization (Ioffe 2017) which tries to gradually reduce reliance on batch stats, or other
 normalizers.
 • Theoretical analysis of training beyond gradient flow:We treated gradient descent continu-
@@ -2761,11 +3239,18 @@ networks.
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 44 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0043.png" alt="Page 44">
+        <div class="page-header">
+            <h2>Page 44 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0043.png" alt="Page 44">
     </div>
     <div class="page-text">
-        <h2>Page 44 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 44 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Key Contributions:
 1. We derived, from first principles, a detailed understanding of thegeometry introduced by normaliza-
 tion (invariance groups and manifold view), unifying previous informal observations into a coherent
@@ -2816,11 +3301,18 @@ Normalization methods serve as a form ofimplicit geometry shapingin deep learnin
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 45 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0044.png" alt="Page 45">
+        <div class="page-header">
+            <h2>Page 45 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0044.png" alt="Page 45">
     </div>
     <div class="page-text">
-        <h2>Page 45 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 45 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>reparameterize the problem in a way that makes the landscape easier to navigate for simple gradient
 methods, and in doing so, they indirectly lead to solutions with desirable properties. Our theoretical
 analysis has illuminated this role of normalization, bringing rigorous insight into a practice that has
@@ -2831,11 +3323,18 @@ practices but also stimulate new ideas for improving optimization and generaliza
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 46 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0045.png" alt="Page 46">
+        <div class="page-header">
+            <h2>Page 46 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0045.png" alt="Page 46">
     </div>
     <div class="page-text">
-        <h2>Page 46 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 46 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>Acknowledgments
 A Appendices
 A.1 Detailed Derivations of Gradients and Hessians with Normalization
@@ -2957,11 +3456,18 @@ i
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 47 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0046.png" alt="Page 47">
+        <div class="page-header">
+            <h2>Page 47 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0046.png" alt="Page 47">
     </div>
     <div class="page-text">
-        <h2>Page 47 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 47 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>We can simplify by separating terms:
 ∂L
 ∂zi(xk) = γi
@@ -3131,11 +3637,18 @@ m
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 48 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0047.png" alt="Page 48">
+        <div class="page-header">
+            <h2>Page 48 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0047.png" alt="Page 48">
     </div>
     <div class="page-text">
-        <h2>Page 48 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 48 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>which simplifies (the−1/m and +1/mδkℓ combine into −1/m for k ̸= ℓ and 0 for k = ℓ): So if we
 arrange in matrix form for batch dimension, this Hessian (with respect toz vector of length m) is
 γ2
@@ -3202,11 +3715,18 @@ For convenience, we summarize the notation used throughout:
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 49 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0048.png" alt="Page 49">
+        <div class="page-header">
+            <h2>Page 49 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0048.png" alt="Page 49">
     </div>
     <div class="page-text">
-        <h2>Page 49 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 49 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>• x∈Rd: input features;t or y: target/label.
 • W(l),b(l): weight matrix and bias vector of layerl.
 • z(l) = W(l)a(l−1) + b(l): pre-activation at layerl (vector).
@@ -3237,11 +3757,18 @@ the main text, thereby ensuring that our analysis is transparent and verifiable.
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 50 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0049.png" alt="Page 50">
+        <div class="page-header">
+            <h2>Page 50 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0049.png" alt="Page 50">
     </div>
     <div class="page-text">
-        <h2>Page 50 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 50 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>References
 [1] S. Ioffe and C. Szegedy, “Batch Normalization: Accelerating Deep Network Training by Reducing
 Internal Covariate Shift,” inProc. of ICML, 2015.
@@ -3285,11 +3812,18 @@ Proc. of NeurIPS, 2015.
 </div>
 <div class="page-container">
     <div class="page-image">
-        <h2>Page 51 - Image</h2>
-        <img src="./pdf_output/Formal_Proof (2)_images/page_0050.png" alt="Page 51">
+        <div class="page-header">
+            <h2>Page 51 - Image</h2>
+        </div>
+        <img src="Formal_Proof (2)_images/page_0050.png" alt="Page 51">
     </div>
     <div class="page-text">
-        <h2>Page 51 - Extracted Text</h2>
+        <div class="page-header">
+            <h2>Page 51 - Extracted Text</h2>
+            <button class="btn copy-page-btn">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        </div>
         <pre>[21] A. Rahamanet al., “On the Spectral Bias of Neural Networks,” inProc. of ICML, 2019.
 [22] A. Mishkin and J. Matas, “All You Need is a Good Init,” inProc. of ICLR, 2016.
 [23] G. Pennington, S. Schoenholz, and S. Ganguli, “Resurrecting the Sigmoid in Deep Learning Through
@@ -3325,5 +3859,74 @@ from the Functional Norm,” inProc. of ICML, 2021.
 51</pre>
     </div>
 </div>
+    </div>
+    
+    <div id="toast" class="toast">Text copied to clipboard!</div>
+    
+    <div id="backToTop" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all the text content from all pages
+            function getAllText() {
+                let allText = '';
+                const textContainers = document.querySelectorAll('.page-text pre');
+                textContainers.forEach(container => {
+                    allText += container.textContent + '\n\n';
+                });
+                return allText.trim();
+            }
+            
+            // Copy text to clipboard
+            function copyToClipboard(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                // Show toast notification
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+            
+            // Add event listener to the copy all button
+            const copyAllButton = document.getElementById('copyAllText');
+            copyAllButton.addEventListener('click', function() {
+                const allText = getAllText();
+                copyToClipboard(allText);
+            });
+            
+            // Add event listeners to copy page buttons
+            const copyPageButtons = document.querySelectorAll('.copy-page-btn');
+            copyPageButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const pageText = this.closest('.page-text').querySelector('pre').textContent;
+                    copyToClipboard(pageText);
+                });
+            });
+            
+            // Back to top button
+            const backToTopButton = document.getElementById('backToTop');
+            
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.add('visible');
+                } else {
+                    backToTopButton.classList.remove('visible');
+                }
+            });
+            
+            backToTopButton.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
 </body>
 </html>

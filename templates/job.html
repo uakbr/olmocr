@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}PDF OCR Processor - Job Status{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Home
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-tasks me-2"></i> Processing Job Status
+            </div>
+            <div class="card-body">
+                <h4 class="mb-3">Processing: {{ job_status.filename }}</h4>
+                
+                <div class="status-container">
+                    <div class="d-flex align-items-center mb-3">
+                        <h5 class="mb-0 me-3">Status:</h5>
+                        <span id="status-badge" class="badge {{ 'bg-success' if job_status.status == 'completed' else 'bg-danger' if job_status.status == 'failed' else 'bg-info' }}">
+                            {{ job_status.status|capitalize }}
+                        </span>
+                    </div>
+                    
+                    <div class="progress">
+                        <div id="progress-bar" class="progress-bar {{ 'bg-success' if job_status.status == 'completed' else 'bg-danger' if job_status.status == 'failed' else 'progress-bar-striped progress-bar-animated' }}" 
+                             role="progressbar" 
+                             aria-valuenow="{{ job_status.progress }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100" 
+                             style="width: {{ job_status.progress }}%">
+                            {{ job_status.progress }}%
+                        </div>
+                    </div>
+                    
+                    <p id="status-message" class="mt-3">{{ job_status.message }}</p>
+                    
+                    {% if job_status.status == 'processing' %}
+                    <div class="text-center mt-4">
+                        <i class="fas fa-cog fa-spin fa-3x text-primary loading-pulse"></i>
+                        <p class="mt-3">PDF processing in progress. This might take a few minutes depending on the size of the document.</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if job_status.status == 'completed' and job_status.html_path %}
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('view_pdf', filename=job_status.html_path) }}" class="btn btn-primary btn-lg" target="_blank">
+                            <i class="fas fa-eye me-2"></i> View Processed PDF
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if job_status.status == 'failed' %}
+                    <div class="text-center mt-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                        <p>Processing failed. Please try again or upload a different PDF.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Only poll the server if the job is not completed or failed
+    {% if job_status.status == 'queued' or job_status.status == 'processing' %}
+    $(document).ready(function() {
+        const jobId = "{{ job_id }}";
+        const statusUrl = "/job/" + jobId + "/status";
+        
+        // Poll job status every 2 seconds
+        const intervalId = setInterval(function() {
+            $.getJSON(statusUrl, function(data) {
+                // Update status badge
+                const statusBadge = $('#status-badge');
+                statusBadge.removeClass('bg-info bg-success bg-danger');
+                
+                if (data.status === 'completed') {
+                    statusBadge.addClass('bg-success');
+                } else if (data.status === 'failed') {
+                    statusBadge.addClass('bg-danger');
+                } else {
+                    statusBadge.addClass('bg-info');
+                }
+                statusBadge.text(data.status.charAt(0).toUpperCase() + data.status.slice(1));
+                
+                // Update progress bar
+                const progressBar = $('#progress-bar');
+                progressBar.css('width', data.progress + '%');
+                progressBar.attr('aria-valuenow', data.progress);
+                progressBar.text(data.progress + '%');
+                
+                if (data.status === 'completed') {
+                    progressBar.removeClass('progress-bar-striped progress-bar-animated');
+                    progressBar.addClass('bg-success');
+                } else if (data.status === 'failed') {
+                    progressBar.removeClass('progress-bar-striped progress-bar-animated');
+                    progressBar.addClass('bg-danger');
+                }
+                
+                // Update status message
+                $('#status-message').text(data.message);
+                
+                // If job is completed, show view button
+                if (data.status === 'completed' && data.html_path) {
+                    $('.status-container').append(
+                        '<div class="text-center mt-4">' +
+                        '<a href="/view/' + data.html_path + '" class="btn btn-primary btn-lg" target="_blank">' +
+                        '<i class="fas fa-eye me-2"></i> View Processed PDF' +
+                        '</a>' +
+                        '</div>'
+                    );
+                    clearInterval(intervalId);
+                    location.reload(); // Reload the page to show the view button
+                }
+                
+                // If job failed, show error message
+                if (data.status === 'failed') {
+                    $('.status-container').append(
+                        '<div class="text-center mt-4">' +
+                        '<i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>' +
+                        '<p>Processing failed. Please try again or upload a different PDF.</p>' +
+                        '</div>'
+                    );
+                    clearInterval(intervalId);
+                    location.reload(); // Reload the page to show the error message
+                }
+            });
+        }, 2000);
+    });
+    {% endif %}
+</script>
+{% endblock %} 

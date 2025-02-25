@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}PDF OCR Processor - Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-upload me-2"></i> Upload PDF for Processing
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" class="file-upload">
+                    <div class="mb-4">
+                        <i class="fas fa-file-pdf file-upload-icon"></i>
+                        <h3 class="mb-3">Drag & Drop PDF or Click to Upload</h3>
+                        <p class="text-muted mb-4">Maximum file size: 100MB. Only PDF files are supported.</p>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="file" name="file" accept=".pdf" required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-upload me-2"></i> Upload & Process
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if processed_pdfs %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-list me-2"></i> Processed Documents
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for pdf in processed_pdfs %}
+                    <div class="pdf-item d-flex align-items-center">
+                        <i class="fas fa-file-pdf pdf-icon"></i>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">{{ pdf.name }}</h5>
+                            <p class="mb-1 text-muted"><small>Processed on: {{ pdf.date }}</small></p>
+                        </div>
+                        <a href="{{ url_for('view_pdf', filename=pdf.html_path) }}" class="btn btn-primary" target="_blank">
+                            <i class="fas fa-eye me-2"></i> View
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body text-center p-5">
+                <i class="fas fa-info-circle fa-3x mb-3 text-muted"></i>
+                <h4>No Processed Documents Yet</h4>
+                <p class="text-muted">Upload a PDF file to start processing.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Enhance file input with custom drag and drop behavior
+    const fileInput = document.getElementById('file');
+    const fileUpload = document.querySelector('.file-upload');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileUpload.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        fileUpload.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        fileUpload.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+        fileUpload.classList.add('bg-light');
+    }
+    
+    function unhighlight() {
+        fileUpload.classList.remove('bg-light');
+    }
+    
+    fileUpload.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+    }
+    
+    // Make the whole upload area clickable
+    fileUpload.addEventListener('click', function() {
+        fileInput.click();
+    });
+    
+    // Prevent default when clicking on the actual input
+    fileInput.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+</script>
+{% endblock %} 
